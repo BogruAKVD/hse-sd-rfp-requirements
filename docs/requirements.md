@@ -4,12 +4,12 @@
 
 ### Use cases
 
-![Диаграмма случаев использования](images/use_cases.png)
+![Диаграмма случаев использования](../images/use_cases.png)
 
 ## Activity
 
-![Диаграмма активности](images/activity.png)
+![Диаграмма активности](../images/activity.png)
 
 ### BPMN
 
-![BPMN диаграмма](images/bpmn.png)
+![BPMN диаграмма](../images/bpmn.png)
