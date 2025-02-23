@@ -1,0 +1,115 @@
+@startuml
+
+class CarModel {
+    +id: int
+    +name: String
+}
+
+class CarPart {
+    +id: int
+    +name: String
+}
+
+class Order {
+    +id: int
+    +dealer: String
+    +configuration: String
+    +color: String
+    +quantity: int
+}
+
+
+class Car {
+    +id: int
+    +order: Order
+    +status: Enum[Status]
+}
+
+class Defect {
+    +id: int
+    +cause: String
+    +dateReported: Date
+}
+
+class RepairRecord {
+    +id: int
+    +startTime: DateTime
+    +endTime: DateTime
+}
+
+class RepairStation {
+    +id: int
+    +zone: RepairZone
+    +status: enum[RepairStationStatus]
+}
+
+class RepairZone {
+    +id: int
+    +name: String
+}
+
+class RepairBrigade {
+    +id: int
+}
+
+class RepairWorker {
+    +id: int
+    +name: String
+    +position: enum[WorkerPosition]
+    +available: Boolean
+}
+
+class Dispatcher {
+    +id: int
+    +name: String
+}
+
+class ShiftForemanReport {
+    +id: int
+    +reportDate: Date
+    +totalRepairs: int
+    +totalRepairsTime: int
+}
+
+class MonthlyReport {
+    +id: int
+    +month: String
+}
+
+class QualityReport {
+    +id: int
+    +reportDate: Date
+    +totalRepairNumber: int
+    +avgRepairTime: float
+}
+
+class BrigadierReport {
+    +id: int
+
+}
+
+
+CarModel "1" <-- CarPart
+CarModel "1" <-- Order
+Order "1" <-- Car : belongsTo
+Car "1" <-- Defect : foundIn
+CarPart "1" <-- Defect: locatedIn
+RepairWorker "1" <-- Defect : diagnosedBy
+Defect "1" <-- RepairRecord : relatedTo 
+RepairWorker "1" <-- RepairRecord : handledBy
+RepairStation "1" <-- RepairRecord : performedAt
+RepairZone "1" <-- "*" RepairStation : locatedIn
+RepairWorker "1" <-- RepairBrigade : supervisor
+RepairWorker "*" <-- RepairBrigade : participants
+RepairBrigade "1" <-- RepairZone : assignedTo
+RepairZone "1" <-- Dispatcher : control
+RepairRecord "*" <-- ShiftForemanReport : summarizes
+RepairWorker "*" <-- MonthlyReport : containsInfoAbout
+RepairZone "*" <-- QualityReport : containsInfoAbout
+Defect "*" <-- QualityReport : summarizes
+RepairRecord "*" <-- QualityReport : containsInfoAbout
+RepairRecord "*" <-- BrigadierReport : summarizes
+RepairWorker "*" <-- BrigadierReport : summarizes
+Car "1" <-- RepairStation : occupiedBy
+
+@enduml
