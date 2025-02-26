@@ -1,15 +1,11 @@
-# hse-sd-rfp-requirements
-## Диаграммы
-
-
-### Use cases
+## Диаграмма случаев использования
 
 ![Диаграмма случаев использования](../images/use_cases.png)
 
-## Activity
+## Диаграмма активности
 
 ![Диаграмма активности](../images/activity.png)
 
-### BPMN
+## BPMN диаграмма
 
 ![BPMN диаграмма](../images/bpmn.png)
