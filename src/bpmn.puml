@@ -1,0 +1,82 @@
+@startuml
+title Бизнес-процесс Автомобильного Завода
+
+actor "Дилер" as Dealer
+actor "Отдел Планирования" as Planning
+actor "Сборочный Цех" as Assembly
+actor "Покрасочный Цех" as Painting
+actor "Отдел Сборки" as Mounting
+actor "Отдел Контроля Качества" as QualityControl
+actor "Ремонтная Бригада" as RepairTeam
+actor "Бригадир" as Foreman
+actor "Ремонтник" as Repairman
+actor "Диспетчер" as Dispatcher
+actor "Начальник Цеха" as WorkhopManager
+actor "Бухгалтерия" as Accounting
+
+' Заказы от дилеров
+Dealer -> Planning : Заказ на автомобили (кол-во, комплектация, цвет)
+activate Planning
+
+Planning -> Planning : Составление производственного плана
+Planning --> Assembly : Производственный план
+
+deactivate Planning
+
+
+
+
+    ' Сборка кузова
+    activate Assembly
+    Assembly -> Dispatcher : Обнаружен дефект
+    RepairTeam -> Assembly : Автомобиль после ремонта
+    Assembly -> Painting : Сборка кузова
+    deactivate Assembly
+
+
+    ' Покраска кузова
+    activate Painting
+    Painting -> Dispatcher : Обнаружен дефект
+    RepairTeam -> Painting : Автомобиль после ремонта
+    Painting -> Mounting : Покраска кузова
+    deactivate Painting
+
+
+    ' Сборка остальных комплектующих
+    activate Mounting
+    Mounting -> Dispatcher : Обнаружен дефект
+    RepairTeam -> Mounting : Автомобиль после ремонта       
+    Mounting -> QualityControl : Сборка автомобиля на конвейере
+    deactivate Mounting
+
+
+    ' Контроль качества
+    activate QualityControl
+    QualityControl -> Dispatcher : Обнаружен дефект
+    RepairTeam -> QualityControl : Автомобиль после ремонта
+
+
+alt Обнаружен дефект
+    Dispatcher -> Foreman : Направление автомобиля в ремонтную зону
+
+    RepairTeam -> Foreman : Обработка автомобиля
+
+    Foreman -> Repairman : Назначение ремонта онкретному рабочему
+
+    Repairman -> RepairTeam : Выполнение диагностики и ремонта
+    Repairman -> Repairman : Регистрация в системе как доступного
+
+end
+   
+
+ 
+    QualityControl -> Dealer : Отгрузка автомобиля
+    deactivate QualityControl
+    activate Dealer
+    Dealer -> Dealer : Продажа автомобиля
+    deactivate Dealer
+
+
+
+
+@enduml
