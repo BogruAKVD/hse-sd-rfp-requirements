@@ -5,10 +5,10 @@ state READY as "Готов к использованию"
 state COOLING as "Охлаждается"
 
 [*] --> OFF
-OFF --> HEATING : Включить
+OFF --> HEATING : Включить нагрев
 HEATING --> READY : Достигнута температура
 READY --> COOLING : Выключить нагрев
 COOLING --> [*] : Охлажден
 HEATING --> COOLING : Выключить нагрев
+COOLING --> HEATING : Включить нагрев обратно
 @enduml
-
