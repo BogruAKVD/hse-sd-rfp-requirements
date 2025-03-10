@@ -1,0 +1,22 @@
+@startuml
+state ON as "Включён" : Нагрев OFF\nЛампочка OFF
+state OFF as "Выключен" : Нагрев OFF\nЛампочка OFF
+state HEATING as "Нагревается" : Нагрев ON\nЛампочка ON
+state READY as "Готов" : Нагрев OFF\nЛампочка ON
+state COOLING as "Охлаждается" : Нагрев OFF\nЛампочка ON
+
+[*] --> ON : Вилку утюга вставили в розетку
+ON --> OFF
+OFF --> ON
+ON --> HEATING : Начать нагрев
+HEATING --> READY : Достигнута температура
+READY --> HEATING
+HEATING --> COOLING
+READY --> COOLING : Закончить нагрев
+COOLING --> OFF
+COOLING --> ON : Закончить охлаждение
+COOLING --> HEATING : Начать нагрев заного
+READY --> OFF
+HEATING --> OFF : Вилку утюга достали из розетки
+OFF --> [*] 
+@enduml
