@@ -1,0 +1,207 @@
+@startuml
+!define RECTANGLE class
+
+' Component Diagram
+
+package "CLI Layer" {
+  RECTANGLE CLIHandler {
+    +parseInput(command: String): Command
+  }
+}
+
+package "Application Core" {
+  RECTANGLE CommandProcessor {
+    +executeCommand(command: Command)
+  }
+
+  RECTANGLE Command {
+    +flags: Map<String, String>
+    +execute(repository: Repository): void
+  }
+
+  RECTANGLE CommitCommand {
+    -message: String
+    -author: String
+  }
+
+  RECTANGLE BranchCommand {
+    -branchName: String
+    -action: BranchAction
+    -startPoint: String
+  }
+
+  RECTANGLE CheckoutCommand {
+    -targetName: String
+  }
+
+  RECTANGLE LogCommand {
+  }
+
+  RECTANGLE MergeCommand {
+    -sourceBranchName: String
+    -targetBranchName: String
+    -allowFastForward: Boolean
+  }
+
+  RECTANGLE CloneCommand {
+    -remoteUrl: String
+    -destinationPath: String
+  }
+
+  RECTANGLE FetchCommand {
+    -remoteUrl: String
+    -branchName: String
+  }
+
+  RECTANGLE PushCommand {
+    -remoteUrl: String
+    -branchName: String
+  }
+
+  enum BranchAction {
+    CREATE,
+    DELETE
+  }
+
+  Command <|-- CommitCommand
+  Command <|-- BranchCommand
+  Command <|-- CheckoutCommand
+  Command <|-- LogCommand
+  Command <|-- MergeCommand
+  Command <|-- CloneCommand
+  Command <|-- FetchCommand
+  Command <|-- PushCommand
+}
+
+package "Repository Management" {
+  RECTANGLE Repository {
+    +currentBranch: String
+    +branches: List<Branch>
+    +addCommit(commit: Commit)
+    +createBranch(name: String): Branch
+    +getBranch(name: String): Branch
+    +saveObject(obj: Object)
+    +loadObject(id: String): Object
+    +getIndex(): IndexManager
+  }
+
+  RECTANGLE Index {
+    +addFile(file: File)
+    +removeFile(file: File)
+    +clear(): void
+    +getFiles(): List<File>
+  }
+
+  RECTANGLE Commit {
+    +id: String
+    +message: String
+    +author: String
+    +date: Date
+    +parentCommit: Commit
+    +diff: List<SnapshotOrDiff>
+    +applyChanges(): void
+  }
+
+  RECTANGLE SnapshotOrDiff {
+    +id: String
+    +apply(): void
+  }
+
+  RECTANGLE Snapshot {
+    +fileContent: String
+    +apply(): void
+  }
+
+  RECTANGLE Diff {
+    +changes: String
+    +apply(): void
+  }
+
+
+  RECTANGLE IndexManager {
+    +addFileToIndex(file: String)
+    +removeFileFromIndex(file: String)
+    +commitChanges(): void
+  }
+  RECTANGLE Branch {
+    +name: String
+    +headCommit: Commit
+    +checkout(): void
+    +delete(): void
+  }
+
+  note left of Commit
+    Диффы представляют собой изменения, сделанные в файлах
+    между двумя коммитами, включая добавление, удаление 
+    и модификацию строк.
+    
+    Снапшоты содержат полную версию файла, который может 
+    быть восстановлен в любой момент времени для точного 
+    восстановления состояния. Снапшот снимается раз в N 
+    коммитов для оптимизации процесса восстановления
+  end note
+}
+
+package "Storage Layer" {
+  RECTANGLE Storage {
+    +save(obj: Object)
+    +load(id: String): Object
+    +delete(id: String)
+    +compress(obj: Object): CompressedObject
+    +decompress(obj: CompressedObject): Object
+  }
+
+  RECTANGLE CompressedObject {
+    +id: String
+    +compressedData: String
+  }
+}
+
+package "Remote Communication Layer" {
+  RECTANGLE RemoteRepository {
+    +clone(url: String): void
+    +fetch(): void
+    +push(): void
+  }
+
+  RECTANGLE NetworkClient {
+    +sendRequest(endpoint: String, data: Object)
+    +receiveResponse(): Object
+  }
+  note right of RemoteRepository
+    Структура хранения на сервере аналогична. 
+    Все объекты, такие как диффы и снапшоты, сжимаются перед сохранением
+    для оптимизации пространства.
+  end note
+}
+
+' Relationships
+CLIHandler --> CommandProcessor
+CommandProcessor --> Command
+
+CommitCommand --> Repository
+BranchCommand --> Repository
+CheckoutCommand --> Repository
+LogCommand --> Repository
+MergeCommand --> Repository
+CloneCommand --> RemoteRepository
+FetchCommand --> RemoteRepository
+PushCommand --> RemoteRepository
+
+Repository --> Branch
+Repository --> Commit
+Repository --> Index
+Repository --> IndexManager
+
+IndexManager --> Index
+IndexManager --> Commit
+
+Commit --> SnapshotOrDiff
+
+Diff --|> SnapshotOrDiff
+Snapshot --|> SnapshotOrDiff
+
+Repository --> Storage
+
+RemoteRepository --> NetworkClient
+@enduml
