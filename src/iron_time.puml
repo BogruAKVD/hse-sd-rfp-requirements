@@ -1,0 +1,30 @@
+@startuml
+binary "Лампочка" as LIGHT
+analog "Температура" as TEMP
+binary "Нагрев" as HEAT
+
+@0
+TEMP is 25
+
+@10
+TEMP is 25
+LIGHT is high
+HEAT is high
+
+@20
+TEMP is 150
+HEAT is {low,high}
+
+@40
+TEMP is 150
+HEAT is low
+
+@60
+TEMP is 50
+LIGHT is low
+
+@80
+TEMP is 25
+
+@enduml
+
